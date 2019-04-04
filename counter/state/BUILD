@@ -9,18 +9,19 @@ py_binary(
   name = "counter",
   srcs = ["counter.py"],
   deps = [
-    "//counter/state:counter_pb",
+    "//counter/state/proto:counter_proto_py",
+#     "//counter/state:counter_pb",
   ],
 )
 
-py_library(
-  name = "counter_pb",
-  srcs = ["counter_pb2.py"],
-  deps = [
-    requirement("protobuf"),
-    requirement("six"),
-  ],
-)
+# py_library(
+#   name = "counter_pb",
+#   srcs = ["counter_pb2.py"],
+#   deps = [
+#     requirement("protobuf"),
+#     requirement("six"),
+#   ],
+# )
 
 py_binary(
   name = "test",

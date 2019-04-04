@@ -1,5 +1,5 @@
 import threading
-import counter_pb2
+from counter.state.proto import counter_py_pb2
 
 class Replica(object):
   def __init__(self, id):
