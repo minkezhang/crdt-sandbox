@@ -5,28 +5,29 @@ from counter.state import replica
 
 class ReplicaTestCase(unittest.TestCase):
   def testConvergence(self):
-    replica_1 = replica.Replica(0)
-    replica_2 = replica.Replica(1)
-    replica_3 = replica.Replica(2)
+    n_increments = [2, 1, 1]
+    replicas = [replica.Replica(i, len(n_increments)) for i in range(len(n_increments))]
 
-    replica_1.increment()
-    replica_1.increment()
+    for (replica_index, increments) in enumerate(n_increments):
+      replicas[i].mutate_increment(increments)
 
-    replica_2.increment()
-    replica_3.increment()
+    for r in replicas:
+      replicas[0].merge(r)
 
-    replica_1.merge(replica_2.payload)
-    replica_1.merge(replica_3.payload)
+    self.assertEqual(replicas[0].query_value(), 4)
 
-    replica_2.merge(replica_1.payload)
-    replica_2.merge(replica_3.payload)
+  def testIdempotency(self):
+    r_1 = replica.Replica(0, 2)
+    r_2 = replica.Replica(1, 2)
 
-    replica_3.merge(replica_1.payload)
-    replica_3.merge(replica_2.payload)
+    r_1.mutate_increment(2)
+    r_2.mutate_increment(5)
 
-    self.assertEqual(replica_1.value(), replica_2.value())
-    self.assertEqual(replica_2.value(), replica_3.value())
-    self.assertEqual(replica_3.value(), 4)
+    r_1.merge(r_2)
+    self.assertEqual(r_1.query_value(), 7)
+
+    r_1.merge(r_2)
+    self.assertEqual(r_1.query_value(), 7)
 
 
 if __name__ == '__main__':
