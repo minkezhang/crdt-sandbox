@@ -21,6 +21,9 @@ class Replica(object):
   def __init__(self, id, n):
     self.id = id
     self.payload = counter_pb2.Payload(increments=[0] * n)
+    # Lock is for when
+    # 1. multiple replicas are merging concurrently
+    # 2. local query / mutate concurrency
     self._payload_lock = threading.Lock()
 
   def mutate_increment(self, n):
